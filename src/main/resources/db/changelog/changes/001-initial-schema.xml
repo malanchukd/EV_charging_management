@@ -5,16 +5,80 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <changeSet id="1" author="developer">
-        <createTable tableName="example_table">
-            <column name="id" type="BIGINT" autoIncrement="true">
+    <!-- Vehicle -->
+    <changeSet id="1" author="dev">
+        <createTable tableName="vehicle">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="vin" type="VARCHAR(17)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="body_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="battery_capacity" type="DECIMAL(6,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="year" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="vehicle"/>
+        </rollback>
+    </changeSet>
+
+    <!-- ChargingStation -->
+    <changeSet id="2" author="dev">
+        <createTable tableName="charging_station">
+            <column name="id" type="BIGSERIAL">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="power_kw" type="DECIMAL(8,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(10)" defaultValue="OFFLINE">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+        <sql>
+            ALTER TABLE charging_station
+                ADD CONSTRAINT chk_status CHECK (status IN ('ONLINE', 'OFFLINE'));
+        </sql>
+        <rollback>
+            <dropTable tableName="charging_station"/>
+        </rollback>
+    </changeSet>
+
+    <!-- ChargingSession -->
+    <changeSet id="3" author="dev">
+        <createTable tableName="charging_session">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="vehicle_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_session_vehicle"
+                             references="vehicle(id)"/>
+            </column>
+            <column name="charging_station_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_session_station"
+                             references="charging_station(id)"/>
+            </column>
+            <column name="kwh_consumed" type="DECIMAL(8,2)"/>
+            <column name="started_at" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="finished_at" type="TIMESTAMP"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="charging_session"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>

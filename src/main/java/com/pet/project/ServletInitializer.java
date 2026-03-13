@@ -1,4 +1,4 @@
-package com.pet.prorejct;
+package com.pet.project;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

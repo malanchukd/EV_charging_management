@@ -1,4 +1,4 @@
-package com.pet.prorejct;
+package com.pet.project;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
